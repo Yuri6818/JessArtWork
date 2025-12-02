@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PetalFawnStudio - Professional Art Portfolio</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to bottom, #fff5f7 0%, #ffe8ec 100%);
+      min-height: 100vh;
+      color: #333;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, #ff6b9d 0%, #c94b7d 100%);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(255, 107, 157, 0.3);
+    }
+
+    header h1 {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+      letter-spacing: 2px;
+    }
+
+    header p {
+      font-size: 1.2rem;
+      opacity: 0.95;
+    }
+
+    /* Navigation */
+    nav {
+      background: white;
+      padding: 0;
+      box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    nav li {
+      position: relative;
+    }
+
+    nav a {
+      display: block;
+      color: #c94b7d;
+      text-decoration: none;
+      font-weight: 600;
+      padding: 1.2rem 1.5rem;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+      letter-spacing: 0.5px;
+    }
+
+    nav a:hover {
+      background: #ff6b9d;
+      color: white;
+    }
+
+    .admin-link {
+      margin-left: auto;
+      background: #c94b7d;
+      color: white !important;
+    }
+
+    .admin-link:hover {
+      background: #a03d65;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Section */
+    .section {
+      background: white;
+      border-radius: 15px;
+      padding: 3rem;
+      margin: 3rem 0;
+      box-shadow: 0 5px 25px rgba(0,0,0,0.08);
+    }
+
+    .section h2 {
+      color: #c94b7d;
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 3px solid #ffb6c1;
+    }
+
+    .section p {
+      line-height: 1.8;
+      color: #555;
+      font-size: 1.1rem;
+    }
+
+    /* Gallery Grid */
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .gallery-item {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .gallery-item:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 35px rgba(255, 107, 157, 0.3);
+    }
+
+    .gallery-item img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      transition: transform 0.3s;
+    }
+
+    .gallery-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .gallery-item-info {
+      padding: 1.5rem;
+      background: linear-gradient(to bottom, white, #fff5f7);
+    }
+
+    .gallery-item-title {
+      font-weight: 700;
+      color: #c94b7d;
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .gallery-item-price {
+      color: #ff6b9d;
+      font-size: 1.3rem;
+      font-weight: 600;
+    }
+
+    .gallery-item-status {
+      display: inline-block;
+      padding: 0.3rem 0.8rem;
+      background: #4CAF50;
+      color: white;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    .status-sold {
+      background: #dc3545;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 0.7rem;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      width: 35px;
+      height: 35px;
+      font-size: 1.2rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      z-index: 10;
+    }
+
+    .admin-mode .delete-btn {
+      display: block;
+    }
+
+    .delete-btn:hover {
+      background: #c82333;
+    }
+
+    /* Commission Status */
+    .status-badge {
+      display: inline-block;
+      padding: 0.7rem 1.5rem;
+      background: #4CAF50;
+      color: white;
+      border-radius: 25px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      margin: 1rem 0;
+    }
+
+    .status-closed {
+      background: #dc3545;
+    }
+
+    /* Social Links */
+    .social-links {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .social-links a {
+      background: linear-gradient(135deg, #ff6b9d 0%, #c94b7d 100%);
+      color: white;
+      padding: 1rem 2rem;
+      border-radius: 30px;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .social-links a:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 25px rgba(255, 107, 157, 0.5);
+    }
+
+    /* Admin Panel */
+    .admin-panel {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      z-index: 1000;
+      overflow-y: auto;
+    }
+
+    .admin-content {
+      background: white;
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 3rem;
+      border-radius: 20px;
+      box-shadow: 0 10px 50px rgba(0,0,0,0.5);
+    }
+
+    .admin-panel.active {
+      display: block;
+    }
+
+    .close-admin {
+      float: right;
+      font-size: 2.5rem;
+      cursor: pointer;
+      color: #c94b7d;
+      line-height: 1;
+      transition: color 0.3s;
+    }
+
+    .close-admin:hover {
+      color: #ff6b9d;
+    }
+
+    /* Login Form */
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+
+    .login-form input {
+      padding: 1rem;
+      border: 2px solid #ffb6c1;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .login-form input:focus {
+      outline: none;
+      border-color: #ff6b9d;
+    }
+
+    .login-form button {
+      background: linear-gradient(135deg, #ff6b9d 0%, #c94b7d 100%);
+      color: white;
+      padding: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      font-weight: 600;
+      transition: transform 0.3s;
+    }
+
+    .login-form button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+    }
+
+    /* Upload Area */
+    .upload-area {
+      border: 3px dashed #ffb6c1;
+      padding: 3rem;
+      text-align: center;
+      border-radius: 15px;
+      margin: 2rem 0;
+      cursor: pointer;
+      transition: all 0.3s;
+      background: #fff5f7;
+    }
+
+    .upload-area:hover {
+      background: #ffe8ec;
+      border-color: #ff6b9d;
+    }
+
+    .upload-area.dragover {
+      background: #ffd6e0;
+      border-color: #c94b7d;
+      transform: scale(1.02);
+    }
+
+    .upload-area h3 {
+      color: #c94b7d;
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    input[type="file"] {
+      display: none;
+    }
+
+    .form-group {
+      margin: 1.5rem 0;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.7rem;
+      color: #c94b7d;
+      font-weight: 600;
+      font-size: 1.1rem;
+    }
+
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 1rem;
+      border: 2px solid #ffb6c1;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    .form-group input:focus, .form-group select:focus {
+      outline: none;
+      border-color: #ff6b9d;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #ff6b9d 0%, #c94b7d 100%);
+      color: white;
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      margin: 0.5rem;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(255, 107, 157, 0.4);
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      background: #5a6268;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    /* Empty State */
+    .empty-gallery {
+      text-align: center;
+      padding: 3rem;
+      color: #999;
+      font-style: italic;
+    }
+
+    /* Footer */
+    footer {
+      background: #2c2c2c;
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      margin-top: 4rem;
+    }
+
+    footer p {
+      color: #ccc;
+    }
+
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 2rem;
+      }
+
+      .gallery {
+        grid-template-columns: 1fr;
+      }
+
+      nav ul {
+        flex-direction: column;
+      }
+
+      nav a {
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>🌸 PETALFAWNSTUDIO 🌸</h1>
+    <p>Custom Character Art & Designs</p>
+  </header>
+
+  <!-- Navigation -->
+  <nav>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#commissions">Commissions</a></li>
+      <li><a href="#ych">YCH</a></li>
+      <li><a href="#bases">Bases</a></li>
+      <li><a href="#adopts">Adopts</a></li>
+      <li><a href="#tos">Terms</a></li>
+      <li><a href="#links">Social</a></li>
+      <li><a class="admin-link" onclick="openAdmin()">Admin</a></li>
+    </ul>
+  </nav>
+
+  <div class="container">
+    <!-- About Section -->
+    <div id="about" class="section">
+      <h2>About Me</h2>
+      <p>Welcome to PetalFawnStudio! I'm a professional digital artist specializing in custom character designs, adoptables, and base creations. With years of experience and a passion for bringing characters to life, I work closely with clients to create unique, high-quality artwork.</p>
+      <p style="margin-top: 1rem;">Every piece is crafted with attention to detail and love for the art form. Whether you're looking for a custom commission, a YCH slot, or a ready-made adopt, I'm here to help bring your vision to reality.</p>
+    </div>
+
+    <!-- Commission Info -->
+    <div id="commissions" class="section">
+      <h2>Commission Information</h2>
+      <div>
+        <strong>Status:</strong> <span class="status-badge" id="commissionStatus">OPEN</span>
+      </div>
+      <p style="margin-top: 1.5rem;"><strong>Pricing:</strong></p>
+      <ul style="margin-left: 2rem; line-height: 2; color: #555;">
+        <li>Sketch: $30 - $40</li>
+        <li>Lined Art: $50 - $60</li>
+        <li>Fully Colored: $60 - $100+</li>
+        <li>Complex Backgrounds: +$20 - $50</li>
+      </ul>
+      <p style="margin-top: 1.5rem;">Turnaround time is typically 1-2 weeks depending on complexity. Rush orders available for an additional fee. All commissions include up to 3 rounds of minor revisions.</p>
+    </div>
+
+    <!-- YCH Section -->
+    <div id="ych" class="section">
+      <h2>Your Character Here (YCH)</h2>
+      <p>Pre-made poses ready for your character! Purchase a slot and I'll customize it with your character's details.</p>
+      <div class="gallery" id="ychGallery"></div>
+    </div>
+
+    <!-- Bases Section -->
+    <div id="bases" class="section">
+      <h2>Bases</h2>
+      <p>Download instant-use bases for your own coloring and personal projects. Each base comes as a high-resolution PSD file.</p>
+      <div class="gallery" id="basesGallery"></div>
+    </div>
+
+    <!-- Adopts Section -->
+    <div id="adopts" class="section">
+      <h2>Adoptables</h2>
+      <p>Pre-made characters ready for adoption! Once purchased, the character design is 100% yours.</p>
+      <div class="gallery" id="adoptsGallery"></div>
+    </div>
+
+    <!-- TOS Section -->
+    <div id="tos" class="section">
+      <h2>Terms of Service</h2>
+      
+      <h3 style="color: #c94b7d; margin-top: 1.5rem;">NFT & Cryptocurrency Policy</h3>
+      <p>I do not sell any of my art as Non-Fungible Tokens (NFTs), traffic in cryptocurrency, or participate in any blockchain-related activity. Under no circumstance may I or my art be used, minted, or sold in this manner. This includes any commissioned work—my creative copyright allows me to prohibit any for-profit use, including sale as an NFT.</p>
+      
+      <h3 style="color: #c94b7d; margin-top: 1.5rem;">Usage Rights</h3>
+      <p>Personal use is permitted for all commissioned work. Commercial use requires separate licensing agreement. You may not resell, redistribute, or claim my artwork as your own creation.</p>
+      
+      <h3 style="color: #c94b7d; margin-top: 1.5rem;">Payment & Refunds</h3>
+      <p>Payment is required upfront for all work. Refunds available before work begins. Once work has started, refunds are provided on a case-by-case basis minus any work completed.</p>
+      
+      <h3 style="color: #c94b7d; margin-top: 1.5rem;">Communication</h3>
+      <p>I will provide regular updates throughout the commission process. Response time is typically within 24-48 hours. Please allow up to the stated turnaround time for completion.</p>
+    </div>
+
+    <!-- Links Section -->
+    <div id="links" class="section">
+      <h2>Connect With Me</h2>
+      <p style="text-align: center; margin-bottom: 1rem;">Follow my work across social media platforms!</p>
+      <div class="social-links">
+        <a href="https://twitter.com" target="_blank">🐦 Twitter</a>
+        <a href="https://deviantart.com" target="_blank">🎨 DeviantArt</a>
+        <a href="https://furaffinity.net" target="_blank">🦊 FurAffinity</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p>&copy; 2024 PetalFawnStudio. All rights reserved.</p>
+    <p style="margin-top: 0.5rem;">Designed with 💖</p>
+  </footer>
+
+  <!-- Admin Panel -->
+  <div class="admin-panel" id="adminPanel">
+    <div class="admin-content">
+      <span class="close-admin" onclick="closeAdmin()">&times;</span>
+      
+      <!-- Login View -->
+      <div id="loginView">
+        <h2 style="color: #c94b7d;">Admin Login</h2>
+        <form class="login-form" onsubmit="login(event)">
+          <input type="text" id="username" placeholder="Username" required>
+          <input type="password" id="password" placeholder="Password" required>
+          <button type="submit">Login</button>
+        </form>
+        <p style="color: #999; margin-top: 1rem; text-align: center; font-size: 0.9rem;">Demo credentials: admin / admin</p>
+      </div>
+
+      <!-- Admin Dashboard -->
+      <div id="adminDashboard" class="hidden">
+        <h2 style="color: #c94b7d;">Admin Dashboard</h2>
+        <button class="btn btn-secondary" onclick="logout()">Logout</button>
+        
+        <div class="form-group">
+          <label>Select Category:</label>
+          <select id="categorySelect">
+            <option value="ych">YCH (Your Character Here)</option>
+            <option value="bases">Bases</option>
+            <option value="adopts">Adoptables</option>
+          </select>
+        </div>
+
+        <div class="upload-area" id="uploadArea" onclick="document.getElementById('fileInput').click()">
+          <h3>📁 Click or Drag & Drop Images</h3>
+          <p>Upload artwork to your selected category</p>
+          <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFiles(this.files)">
+        </div>
+
+        <div class="form-group">
+          <label>Artwork Title:</label>
+          <input type="text" id="artTitle" placeholder="e.g., Fire Dragon YCH">
+        </div>
+
+        <div class="form-group">
+          <label>Price:</label>
+          <input type="text" id="artPrice" placeholder="e.g., $60">
+        </div>
+
+        <div class="form-group">
+          <label>Status:</label>
+          <select id="artStatus">
+            <option value="available">Available</option>
+            <option value="sold">Sold</option>
+          </select>
+        </div>
+
+        <button class="btn" onclick="addArtwork()">Add Artwork</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Sample data storage with example images
+    let artData = {
+      ych: [
+        { 
+          id: 1, 
+          title: 'Fire Character YCH', 
+          price: '$60', 
+          status: 'available',
+          image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop'
+        },
+        { 
+          id: 2, 
+          title: 'Fantasy Warrior Pose', 
+          price: '$70', 
+          status: 'available',
+          image: 'https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=400&h=400&fit=crop'
+        },
+        { 
+          id: 3, 
+          title: 'Magical Girl YCH', 
+          price: '$65', 
+          status: 'sold',
+          image: 'https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=400&h=400&fit=crop'
+        }
+      ],
+      bases: [
+        { 
+          id: 4, 
+          title: 'Wolf Base - PSD', 
+          price: '$30', 
+          status: 'available',
+          image: 'https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=400&h=400&fit=crop'
+        },
+        { 
+          id: 5, 
+          title: 'Feline Base Pack', 
+          price: '$35', 
+          status: 'available',
+          image: 'https://images.unsplash.com/photo-1573865526739-10c1dd7aa59e?w=400&h=400&fit=crop'
+        }
+      ],
+      adopts: [
+        { 
+          id: 6, 
+          title: 'Pink Fawn Character', 
+          price: '$45', 
+          status: 'available',
+          image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop'
+        },
+        { 
+          id: 7, 
+          title: 'Galaxy Dragon Adopt', 
+          price: '$80', 
+          status: 'available',
+          image: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400&h=400&fit=crop'
+        },
+        { 
+          id: 8, 
+          title: 'Ocean Spirit Design', 
+          price: '$55', 
+          status: 'sold',
+          image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop'
+        }
+      ]
+    };
+    
+    let isLoggedIn = false;
+    let isAdminMode = false;
+    let currentFiles = [];
+
+    // Render all galleries on load
+    function renderGalleries() {
+      renderGallery('ych', 'ychGallery');
+      renderGallery('bases', 'basesGallery');
+      renderGallery('adopts', 'adoptsGallery');
+    }
+
+    // Render specific gallery
+    function renderGallery(category, elementId) {
+      const gallery = document.getElementById(elementId);
+      gallery.innerHTML = '';
+      
+      if (artData[category].length === 0) {
+        gallery.innerHTML = '<div class="empty-gallery">No items yet. Check back soon!</div>';
+        return;
+      }
+      
+      artData[category].forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'gallery-item';
+        div.innerHTML = `
+          <button class="delete-btn" onclick="deleteItem('${category}', ${item.id})" title="Delete">✕</button>
+          <img src="${item.image}" alt="${item.title}">
+          <div class="gallery-item-info">
+            <div class="gallery-item-title">${item.title}</div>
+            <div class="gallery-item-price">${item.price}</div>
+            <span class="gallery-item-status ${item.status === 'sold' ? 'status-sold' : ''}">${item.status === 'sold' ? 'SOLD' : 'AVAILABLE'}</span>
+          </div>
+        `;
+        gallery.appendChild(div);
+      });
+    }
+
+    // Admin panel functions
+    function openAdmin() {
+      document.getElementById('adminPanel').classList.add('active');
+    }
+
+    function closeAdmin() {
+      document.getElementById('adminPanel').classList.remove('active');
+    }
+
+    function login(e) {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      
+      if (username === 'admin' && password === 'admin') {
+        isLoggedIn = true;
+        isAdminMode = true;
+        document.body.classList.add('admin-mode');
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('adminDashboard').classList.remove('hidden');
+        alert('✓ Login successful! You can now manage your artwork.');
+      } else {
+        alert('✗ Invalid credentials. Try: admin / admin');
+      }
+    }
+
+    function logout() {
+      isLoggedIn = false;
+      isAdminMode = false;
+      document.body.classList.remove('admin-mode');
+      document.getElementById('loginView').classList.remove('hidden');
+      document.getElementById('adminDashboard').classList.add('hidden');
+      document.getElementById('username').value = '';
+      document.getElementById('password').value = '';
+      closeAdmin();
+    }
+
+    // File handling
+    function handleFiles(files) {
+      currentFiles = Array.from(files);
+      if (currentFiles.length > 0) {
+        document.getElementById('uploadArea').innerHTML = `
+          <h3>✓ ${currentFiles.length} file(s) selected</h3>
+          <p style="color: #4CAF50; font-weight: 600;">Ready to upload!</p>
+        `;
+      }
+    }
+
+    // Drag and drop
+    const uploadArea = document.getElementById('uploadArea');
+    
+    uploadArea.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      uploadArea.classList.add('dragover');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+      uploadArea.classList.remove('dragover');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+      e.preventDefault();
+      uploadArea.classList.remove('dragover');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    // Add artwork
+    function addArtwork() {
+      if (currentFiles.length === 0) {
+        alert('⚠ Please select an image first!');
+        return;
+      }
+
+      const category = document.getElementById('categorySelect').value;
+      const title = document.getElementById('artTitle').value || 'Untitled Artwork';
+      const price = document.getElementById('artPrice').value || '$0';
+      const status = document.getElementById('artStatus').value;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const newItem = {
+          id: Date.now(),
+          title: title,
+          price: price,
+          status: status,
+          image: e.target.result
+        };
+        
+        artData[category].push(newItem);
+        renderGalleries();
+        
+        // Reset form
+        currentFiles = [];
+        document.getElementById('artTitle').value = '';
+        document.getElementById('artPrice').value = '';
+        document.getElementById('artStatus').value = 'available';
+        document.getElementById('uploadArea').innerHTML = `
+          <h3>📁 Click or Drag & Drop Images</h3>
+          <p>Upload artwork to your selected category</p>
+        `;
+        
+        alert('✓ Artwork added successfully to ' + category.toUpperCase() + '!');
+      };
+      reader.readAsDataURL(currentFiles[0]);
+    }
+
+    // Delete item
+    function deleteItem(category, id) {
+      if (confirm('Are you sure you want to delete this item? This cannot be undone.')) {
+        artData[category] = artData[category].filter(item => item.id !== id);
+        renderGalleries();
+        alert('✓ Item deleted successfully!');
+      }
+    }
+
+    // Initialize galleries
+    renderGalleries();
+  </script>
+</body>
+</html>
