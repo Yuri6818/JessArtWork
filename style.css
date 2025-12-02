@@ -30,8 +30,14 @@
 
 body {
   font-family: var(--font-body);
+  /* Background image (placed in /images/background.jpg). Uses a dark translucent overlay for readability. */
+  background-image: linear-gradient(rgba(10,12,15,0.35), rgba(10,12,15,0.35)), url('images/background.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed; /* keeps the image stable while content scrolls */
+  /* Fallback gradient in case image is missing */
   background: linear-gradient(135deg, var(--color-peach) 0%, var(--color-pink) 100%);
-  background-attachment: fixed;
   color: var(--color-dark);
   line-height: 1.7;
 }
@@ -578,6 +584,13 @@ body.admin-mode .gallery-item:hover .delete-btn {
   .content-section { padding: 2rem; }
   .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
   .main-header h1 { font-size: 2.5rem; }
+}
+
+/* Improve mobile performance: fixed background causes jank on some devices */
+@media (max-width: 480px) {
+  body {
+    background-attachment: scroll;
+  }
 }
 
 @media (max-width: 480px) {
