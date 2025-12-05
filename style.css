@@ -13,6 +13,9 @@
   --color-light-text: #555;
   --color-grey: #6c757d;
   --color-pink: #f78fb3;
+  --color-pink-light: #ffc2d1;
+  --color-pink-dark: #e06c9f; /* For text and darker accents */
+  --color-pink-bg: rgba(255, 230, 235, 0.75); /* For glassmorphism background */
   --color-gold: #ffcb6b;
   --color-peach: #ffc3a0;
 
@@ -30,14 +33,12 @@
 
 body {
   font-family: var(--font-body);
-  /* Background image (placed in /images/background.jpg). Uses a dark translucent overlay for readability. */
-  background-image: linear-gradient(rgba(10,12,15,0.35), rgba(10,12,15,0.35)), url('images/background.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center center;
-  background-attachment: fixed; /* keeps the image stable while content scrolls */
-  /* Fallback gradient in case image is missing */
-  background: linear-gradient(135deg, var(--color-peach) 0%, var(--color-pink) 100%);
+  /* Updated background to use the repeating rose pattern */
+  background-image: url('images/rose-background.png');
+  background-repeat: repeat;
+  background-size: auto;
+  background-position: top left;
+  background-attachment: scroll; /* Changed from fixed for better performance and pattern flow */
   color: var(--color-dark);
   line-height: 1.7;
 }
@@ -62,29 +63,53 @@ html {
 }
 
 .main-header h1 {
-  font-family: var(--font-heading);
-  font-size: 3rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: 2px;
-  text-shadow: 0 3px 15px rgba(0,0,0,0.15);
+  font-family: 'Great Vibes', cursive;
+  font-size: 5.5rem;
+  font-weight: 500;
+  line-height: 1.2;
+  margin-bottom: 1rem;
+  /* Image-filled text effect */
+  background-image: url('images/rose-background.png');
+  background-size: cover;
+  background-position: center;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  /* Outline and shadow to improve legibility */
+  text-shadow: 
+    -1px -1px 0 rgba(42, 47, 67, 0.4),  
+     1px -1px 0 rgba(42, 47, 67, 0.4),
+    -1px  1px 0 rgba(42, 47, 67, 0.4),
+     1px  1px 0 rgba(42, 47, 67, 0.4),
+     4px 4px 6px rgba(0,0,0,0.2);
 }
 
 .main-header p {
-  font-size: 1.2rem;
-  color: rgba(255, 255, 255, 0.9);
-  margin-top: 0.5rem;
+  font-family: 'Great Vibes', cursive;
+  font-size: 1.8rem;
+  color: var(--color-pink-dark);
+  text-shadow: 0 1px 5px rgba(255, 255, 255, 0.6);
+  margin-top: 0;
 }
 
-/* Glassmorphism Sections */
+/* Glassmorphism Sections - Increased opacity and added pink tint */
 .content-section, .gallery-item {
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--color-pink-bg);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: var(--border-radius);
   box-shadow: var(--shadow);
-  transition: box-shadow 0.3s ease;
+  /* Animation properties */
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+/* State for when element is visible */
+.content-section.is-visible, .gallery-item.is-visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .content-section {
@@ -97,7 +122,7 @@ html {
 }
 
 .main-footer {
-  background: rgba(42, 47, 67, 0.8);
+  background: rgba(42, 47, 67, 0.85);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   color: white;
@@ -118,7 +143,7 @@ html {
 /* 3. NAVIGATION
 --------------------------------- */
 .main-nav {
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.6); /* Slightly more transparent for a layered look */
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   box-shadow: 0 5px 20px rgba(0,0,0,0.05);
@@ -162,11 +187,12 @@ html {
 }
 
 .main-nav a:hover, .main-nav a:focus {
-  color: var(--color-pink);
+  color: var(--color-pink-dark);
 }
 
 .main-nav a:hover::after, .main-nav a:focus::after {
   width: 40%;
+  background: var(--color-pink-light);
 }
 
 .admin-link-li {
@@ -184,7 +210,7 @@ html {
 }
 
 .admin-link:hover {
-  background: #f5719f !important;
+  background: var(--color-pink-dark) !important;
   transform: translateY(-2px);
 }
 
@@ -199,7 +225,7 @@ html {
   margin-bottom: 2.5rem;
   text-align: center;
   position: relative;
-  color: var(--color-dark);
+  color: var(--color-pink-dark);
   text-shadow: 0 1px 3px rgba(0,0,0,0.05);
 }
 
@@ -211,7 +237,7 @@ html {
   transform: translateX(-50%);
   width: 60px;
   height: 4px;
-  background: var(--color-gold);
+  background: var(--color-pink);
   border-radius: 2px;
 }
 
@@ -382,6 +408,19 @@ body.admin-mode .gallery-item:hover .delete-btn {
 
 /* 6. BUTTONS & FORMS
 --------------------------------- */
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 var(--shadow-color);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(247, 143, 179, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(247, 143, 179, 0);
+  }
+}
+
 .btn {
   font-family: var(--font-body);
   font-weight: 600;
@@ -389,7 +428,7 @@ body.admin-mode .gallery-item:hover .delete-btn {
   border-radius: 30px;
   border: none;
   cursor: pointer;
-  transition: all 0.3s;
+  transition: all 0.4s ease;
   text-decoration: none;
   display: inline-block;
   font-size: 1rem;
@@ -397,11 +436,14 @@ body.admin-mode .gallery-item:hover .delete-btn {
 }
 
 .btn-primary {
-  background: linear-gradient(to right, var(--color-pink), #ffafbd);
+  background: linear-gradient(to right, var(--color-pink-dark), var(--color-pink), var(--color-pink-light));
+  background-size: 200% 100%;
   color: white;
+  animation: pulse 2.5s infinite;
 }
 
 .btn-primary:hover {
+  background-position: right center;
   transform: translateY(-3px);
   box-shadow: 0 6px 25px var(--shadow-color);
 }
@@ -429,7 +471,7 @@ body.admin-mode .gallery-item:hover .delete-btn {
 }
 
 .social-btn:hover {
-  background: var(--color-pink);
+  background: var(--color-pink-light);
   color: white;
   transform: translateY(-3px);
   box-shadow: var(--shadow-hover);

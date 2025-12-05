@@ -89,6 +89,26 @@ document.addEventListener('DOMContentLoaded', () => {
   const uploadPreview = document.getElementById('uploadPreview');
   const fileInput = document.getElementById('fileInput');
 
+  // --- FLAIR ANIMATIONS (Define First) -----------------------------------
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('is-visible');
+        observer.unobserve(entry.target); // Stop observing once visible
+      }
+    });
+  }, {
+    threshold: 0.1 // Trigger when 10% of the element is visible
+  });
+
+  // Function to find and observe all animatable elements on the page
+  const applyObserver = () => {
+    const elementsToAnimate = document.querySelectorAll('.content-section:not(.is-visible), .gallery-item:not(.is-visible)');
+    elementsToAnimate.forEach(el => {
+      observer.observe(el);
+    });
+  };
+
   // --- GALLERY FUNCTIONS ---------------------------------------------------
   
   /**
@@ -110,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     filteredData.forEach(item => {
       const div = document.createElement('div');
-      div.className = `gallery-item cat-${item.category}`;
+      div.className = `gallery-item cat-${item.category}`; // Let the observer handle the animation
       div.innerHTML = `
         <div class="gallery-item-image">
           <img src="${item.image}" alt="${item.title}" loading="lazy">
@@ -185,6 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       artData.unshift(newItem); // Add to the beginning of the array
       renderGallery(); // Re-render the whole gallery
+      applyObserver(); // Apply observer to the new item
       
       // Reset form
       document.getElementById('adminDashboard').querySelector('form')?.reset();
@@ -203,6 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (confirm('Are you sure you want to delete this item? This cannot be undone.')) {
       artData = artData.filter(item => item.id !== id);
       renderGallery();
+      applyObserver(); // Re-apply observer after deletion
       alert('✓ Item deleted successfully!');
     }
   }
@@ -215,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
       galleryFilterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       renderGallery(btn.dataset.filter);
+      applyObserver(); // Re-apply observer to new/filtered items
     });
   });
 
@@ -246,8 +269,8 @@ document.addEventListener('DOMContentLoaded', () => {
     handleFile(e.dataTransfer.files[0]);
   });
   
-
   // --- INITIALIZATION ------------------------------------------------------
   renderGallery(); // Initial render of the gallery on page load
+  applyObserver(); // Apply animations to initial elements
 
 });
