@@ -31,9 +31,10 @@
       <ul>
         <li><a href="#about">About</a></li>
         <li><a href="#commissions">Commissions</a></li>
-        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#ych">YCH</a></li>
+        <li><a href="#bases">Bases</a></li>
+        <li><a href="#adopts">Adopts</a></li>
         <li><a href="#tos">Terms</a></li>
-        <li><a href="#links">Social</a></li>
         <li class="admin-link-li"><a class="admin-link" onclick="openAdmin()">Admin</a></li>
       </ul>
     </div>
@@ -67,17 +68,36 @@
       </div>
     </section>
 
-    <!-- Gallery Section -->
-    <section id="gallery" class="content-section">
-      <h2 class="section-title">Gallery</h2>
-      <div class="gallery-nav">
-        <button class="gallery-filter-btn active" data-filter="all">All</button>
-        <button class="gallery-filter-btn" data-filter="ych">YCH</button>
-        <button class="gallery-filter-btn" data-filter="bases">Bases</button>
-        <button class="gallery-filter-btn" data-filter="adopts">Adopts</button>
+    <!-- YCH Section -->
+    <section id="ych" class="content-section">
+      <h2 class="section-title">YCH Auctions</h2>
+      <div class="section-content">
+        <p>All "Your Character Here" auctions run for <strong>24 hours</strong>. Bidding is handled via PayPal. The winner will be contacted to provide character details.</p>
       </div>
-      <div class="gallery-grid" id="galleryGrid">
-        <!-- Artwork will be dynamically inserted here by script.js -->
+      <div class="gallery-grid" id="ychGrid">
+        <!-- YCH artwork will be dynamically inserted here -->
+      </div>
+    </section>
+
+    <!-- Bases Section -->
+    <section id="bases" class="content-section">
+      <h2 class="section-title">Bases for Sale</h2>
+      <div class="section-content">
+        <p>Each base pack includes <strong>PSD and PNG files</strong>. Files are available for <strong>instant download</strong> after purchase.</p>
+      </div>
+      <div class="gallery-grid" id="basesGrid">
+        <!-- Base artwork will be dynamically inserted here -->
+      </div>
+    </section>
+
+    <!-- Adopts Section -->
+    <section id="adopts" class="content-section">
+      <h2 class="section-title">Character Adopts</h2>
+      <div class="section-content">
+        <p>Adoptables are sold for a <strong>fixed price</strong>. Upon purchase, <strong>ownership of the character transfers to you</strong> and you will receive an <strong>instant download of the full-size PNG file</strong>.</p>
+      </div>
+      <div class="gallery-grid" id="adoptsGrid">
+        <!-- Adopt artwork will be dynamically inserted here -->
       </div>
     </section>
 
@@ -85,14 +105,24 @@
     <section id="tos" class="content-section">
       <h2 class="section-title">Terms of Service</h2>
       <div class="section-content">
+        <p style="text-align: center;">Please read these terms carefully before commissioning work. By purchasing a commission, you agree to these terms.</p>
+
         <h3>NFT & Cryptocurrency Policy</h3>
         <p>I do not sell any of my art as Non-Fungible Tokens (NFTs), traffic in cryptocurrency, or participate in any blockchain-related activity. Under no circumstance may I or my art be used, minted, or sold in this manner. This includes any commissioned work—my creative copyright allows me to prohibit any for-profit use, including sale as an NFT.</p>
         
+        <h3>Commission Process</h3>
+        <p><strong>1. Initial Contact:</strong> To begin, contact me with your commission request, including character references and a description of your idea. We will discuss the details and I will provide a price quote.</p>
+        <p><strong>2. Sketch & Approval:</strong> Once payment is made, I will create a preliminary sketch for your review. You may request major changes at this stage. Up to 3 rounds of minor revisions are included.</p>
+        <p><strong>3. Final Artwork:</strong> After the sketch is approved, I will proceed with lining and coloring the artwork. Only minor color adjustments can be made at this stage. Turnaround time is typically 1-2 weeks.</p>
+
         <h3>Usage Rights</h3>
-        <p>Personal use is permitted for all commissioned work. Commercial use requires separate licensing agreement. You may not resell, redistribute, or claim my artwork as your own creation.</p>
+        <p>Personal use is permitted for all commissioned work. You may post the artwork on your social media (with credit), use it as a profile picture, etc. Commercial use requires a separate licensing agreement and fee. You may not resell, redistribute, or claim my artwork as your own creation.</p>
         
         <h3>Payment & Refunds</h3>
-        <p>Payment is required upfront for all work. Refunds available before work begins. Once work has started, refunds are provided on a case-by-case basis minus any work completed.</p>
+        <p>Payment is required upfront for all work via PayPal. Refunds are available before work begins (minus any transaction fees). Once work has started, refunds are provided on a case-by-case basis depending on the amount of work completed.</p>
+
+        <h3>Artist Rights</h3>
+        <p>I, the artist, retain the copyright to the artwork and the right to display it in my portfolio, on social media, and for promotional purposes. I reserve the right to refuse any commission request for any reason. The client will not be charged if the commission is refused.</p>
       </div>
     </section>
 
@@ -100,9 +130,9 @@
     <section id="links" class="content-section">
       <h2 class="section-title">Connect With Me</h2>
       <div class="social-links">
-        <a href="https://twitter.com" target="_blank" class="social-btn">Twitter</a>
-        <a href="https://deviantart.com" target="_blank" class="social-btn">DeviantArt</a>
-        <a href="https://furaffinity.net" target="_blank" class="social-btn">FurAffinity</a>
+        <a href="https://twitter.com/PetalFawnStudio" target="_blank" class="social-btn">Twitter</a>
+        <a href="https://www.deviantart.com/petalfawnstudio" target="_blank" class="social-btn">DeviantArt</a>
+        <a href="https://www.furaffinity.net/user/petalfawnstudio" target="_blank" class="social-btn">FurAffinity</a>
       </div>
     </section>
   </main>

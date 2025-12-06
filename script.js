@@ -77,10 +77,6 @@ document.addEventListener('DOMContentLoaded', () => {
   let currentFile = null;
 
   // --- ELEMENTS ------------------------------------------------------------
-  const galleryGrid = document.getElementById('galleryGrid');
-  const galleryFilterBtns = document.querySelectorAll('.gallery-filter-btn');
-  
-  // Admin Panel Elements
   const adminPanel = document.getElementById('adminPanel');
   const loginForm = document.getElementById('loginForm');
   const loginView = document.getElementById('loginView');
@@ -112,41 +108,78 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- GALLERY FUNCTIONS ---------------------------------------------------
   
   /**
-   * Renders the gallery based on a filter
-   * @param {string} filter - The category to display ('all', 'ych', 'bases', 'adopts')
+   * Renders artwork into a specific grid.
+   * @param {string} category - The category to display ('ych', 'bases', 'adopts')
+   * @param {string} gridId - The ID of the grid element to render into.
    */
-  window.renderGallery = function(filter = 'all') {
-    if (!galleryGrid) return;
-    galleryGrid.innerHTML = '';
+  const renderArtworks = (category, gridId) => {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
     
-    const filteredData = filter === 'all' 
-      ? artData 
-      : artData.filter(item => item.category === filter);
+    grid.innerHTML = '';
+    const filteredData = artData.filter(item => item.category === category);
 
     if (filteredData.length === 0) {
-      galleryGrid.innerHTML = '<p class="empty-gallery">No items in this category yet.</p>';
+      grid.innerHTML = '<p class="empty-gallery">No items in this category yet.</p>';
       return;
     }
 
     filteredData.forEach(item => {
       const div = document.createElement('div');
-      div.className = `gallery-item cat-${item.category}`; // Let the observer handle the animation
-      div.innerHTML = `
+      div.className = `gallery-item cat-${item.category}`;
+
+      // Create the common image part
+      let itemHTML = `
         <div class="gallery-item-image">
           <img src="${item.image}" alt="${item.title}" loading="lazy">
-        </div>
-        <div class="gallery-item-info">
-          <h4 class="gallery-item-title">${item.title}</h4>
-          <p class="gallery-item-price">${item.price}</p>
-          <span class="gallery-item-status status-${item.status}">
-            ${item.status}
-          </span>
-        </div>
-        <button class="delete-btn" onclick="deleteItem(${item.id})" title="Delete">✕</button>
-      `;
-      galleryGrid.appendChild(div);
+        </div>`;
+
+      // Conditionally create the info part based on category
+      if (category === 'ych') {
+        itemHTML += `
+          <div class="gallery-item-info">
+            <h4 class="gallery-item-title">${item.title}</h4>
+            <span class="gallery-item-status status-${item.status}">
+              ${item.status}
+            </span>
+            <a href="#" class="btn btn-primary" style="margin-top: 1rem; width: 100%; text-align: center;">Bid on PayPal (Starts at ${item.price})</a>
+          </div>`;
+      } else if (category === 'bases') {
+        itemHTML += `
+          <div class="gallery-item-info">
+            <h4 class="gallery-item-title">${item.title}</h4>
+            <span class="gallery-item-status status-${item.status}">
+              ${item.status}
+            </span>
+            <a href="#" class="btn btn-primary" style="margin-top: 1rem; width: 100%; text-align: center;">Purchase for ${item.price} (PSD + PNG)</a>
+          </div>`;
+      } else { // 'adopts' and any other category
+        itemHTML += `
+          <div class="gallery-item-info">
+            <h4 class="gallery-item-title">${item.title}</h4>
+            <span class="gallery-item-status status-${item.status}">
+              ${item.status}
+            </span>
+            <a href="#" class="btn btn-primary" style="margin-top: 1rem; width: 100%; text-align: center;">Buy Now for ${item.price} (Instant PNG)</a>
+          </div>`;
+      }
+
+      itemHTML += `<button class="delete-btn" onclick="deleteItem(${item.id})" title="Delete">✕</button>`;
+      
+      div.innerHTML = itemHTML;
+      grid.appendChild(div);
     });
-  }
+  };
+
+  /**
+   * Renders all galleries on the page.
+   */
+  const renderAllGalleries = () => {
+    renderArtworks('ych', 'ychGrid');
+    renderArtworks('bases', 'basesGrid');
+    renderArtworks('adopts', 'adoptsGrid');
+    applyObserver(); // Re-apply observer to new items
+  };
 
   // --- ADMIN PANEL FUNCTIONS -----------------------------------------------
 
@@ -163,7 +196,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
-    // In a real application, this would be a secure check against a server
     if (username === 'admin' && password === 'admin') {
       document.body.classList.add('admin-mode');
       loginView.classList.add('hidden');
@@ -195,20 +227,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const reader = new FileReader();
     reader.onload = function(e) {
       const newItem = {
-        id: Date.now(), // Use timestamp for a unique ID
+        id: Date.now(),
         category: category,
         title: title,
         price: price,
         status: status,
-        image: e.target.result // Base64 encoded image
+        image: e.target.result
       };
       
-      artData.unshift(newItem); // Add to the beginning of the array
-      renderGallery(); // Re-render the whole gallery
-      applyObserver(); // Apply observer to the new item
+      artData.unshift(newItem);
+      renderAllGalleries();
       
       // Reset form
-      document.getElementById('adminDashboard').querySelector('form')?.reset();
+      document.getElementById('artTitle').value = '';
+      document.getElementById('artPrice').value = '';
       currentFile = null;
       uploadPreview.innerHTML = '';
       uploadPreview.classList.add('hidden');
@@ -223,23 +255,12 @@ document.addEventListener('DOMContentLoaded', () => {
   window.deleteItem = function(id) {
     if (confirm('Are you sure you want to delete this item? This cannot be undone.')) {
       artData = artData.filter(item => item.id !== id);
-      renderGallery();
-      applyObserver(); // Re-apply observer after deletion
+      renderAllGalleries();
       alert('✓ Item deleted successfully!');
     }
   }
 
   // --- EVENT LISTENERS -----------------------------------------------------
-
-  // Gallery filter buttons
-  galleryFilterBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      galleryFilterBtns.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      renderGallery(btn.dataset.filter);
-      applyObserver(); // Re-apply observer to new/filtered items
-    });
-  });
 
   // Admin login form submission
   loginForm.addEventListener('submit', window.login);
@@ -270,7 +291,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
   
   // --- INITIALIZATION ------------------------------------------------------
-  renderGallery(); // Initial render of the gallery on page load
-  applyObserver(); // Apply animations to initial elements
+  renderAllGalleries();
+  applyObserver();
 
 });
