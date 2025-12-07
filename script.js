@@ -4,11 +4,17 @@
 */
 
 var artData; // make artData accessible to other handlers outside the DOMContentLoaded scope
-document.addEventListener('DOMContentLoaded', () => {
 
-  // --- DATA ----------------------------------------------------------------
-  // Combined and structured artwork data (assign to the outer-scoped var `artData`)
-  artData = [
+// --- LOCALSTORAGE PERSISTENCE --------------------------------------------
+const ART_DATA_KEY = 'jessArtData';
+
+function saveArtData() {
+  localStorage.setItem(ART_DATA_KEY, JSON.stringify(artData));
+}
+
+function getInitialData() {
+  // Combined and structured artwork data
+  return [
     { 
       id: 1,
       category: 'ych',
@@ -84,6 +90,24 @@ document.addEventListener('DOMContentLoaded', () => {
       image: 'https://images.unsplash.com/photo-1503264116251-35a269479413?w=600&h=600&fit=crop'
     }
   ];
+}
+
+function loadArtData() {
+  const savedData = localStorage.getItem(ART_DATA_KEY);
+  if (savedData) {
+    artData = JSON.parse(savedData);
+  } else {
+    // Fallback to initial data if nothing is in localStorage
+    artData = getInitialData();
+    saveArtData(); // Save the initial data
+  }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+
+  // --- DATA ----------------------------------------------------------------
+  // Load data from localStorage or use initial data
+  loadArtData();
 
   let currentFile = null;
 
@@ -245,6 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       
       artData.unshift(newItem);
+      saveArtData(); // Persist data
       renderAllGalleries();
       
       // Reset form
@@ -264,6 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
   window.deleteItem = function(id) {
     if (confirm('Are you sure you want to delete this item? This cannot be undone.')) {
       artData = artData.filter(item => item.id !== id);
+      saveArtData(); // Persist data
       renderAllGalleries();
       alert('✓ Item deleted successfully!');
     }
@@ -279,6 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     if (!confirm('Mark this item as SOLD?')) return;
     item.status = 'sold';
+    saveArtData(); // Persist data
     renderAllGalleries();
     alert('✓ Item marked as SOLD');
   }
@@ -413,6 +440,7 @@ async function handlePurchaseSubmit() {
   try {
     await triggerDownloadForItem(item);
     item.status = 'sold';
+    saveArtData(); // Persist data
     renderAllGalleries();
     alert('✓ Purchase complete — file downloaded and item marked as sold.');
   } catch (err) {
@@ -434,6 +462,7 @@ window.handleDownload = async function(id) {
   try {
     await triggerDownloadForItem(item);
     item.status = 'sold';
+    saveArtData(); // Persist data
     renderAllGalleries();
     alert('✓ Downloaded and marked as sold.');
   } catch (err) {
