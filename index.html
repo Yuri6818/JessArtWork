@@ -29,12 +29,12 @@
   <nav class="main-nav">
     <div class="container">
       <ul>
-        <li><a href="#about">About</a></li>
-        <li><a href="#commissions">Commissions</a></li>
-        <li><a href="#ych">YCH</a></li>
-        <li><a href="#bases">Bases</a></li>
-        <li><a href="#adopts">Adopts</a></li>
-        <li><a href="#tos">Terms</a></li>
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="commissions.html">Commissions</a></li>
+        <li><a class="nav-uppercase" href="ych.html">YCH</a></li>
+        <li><a href="bases.html">Bases</a></li>
+        <li><a href="adopts.html">Adopts</a></li>
+        <li><a class="nav-uppercase" href="tos.html">T.O.S.</a></li>
         <li class="admin-link-li"><a class="admin-link" onclick="openAdmin()">Admin</a></li>
       </ul>
     </div>
@@ -50,80 +50,16 @@
       </div>
     </section>
 
-    <!-- Commission Info -->
-    <section id="commissions" class="content-section">
-      <h2 class="section-title">Commission Information</h2>
+    <!-- Personal Works Gallery (moved to top, under About) -->
+    <section id="personal" class="content-section">
+      <h2 class="section-title">Personal Works</h2>
       <div class="section-content">
-        <div class="commission-status">
-          <strong>Status:</strong> <span class="status-badge status-open" id="commissionStatus">OPEN</span>
-        </div>
-        <p><strong>Pricing:</strong></p>
-        <ul class="pricing-list">
-          <li>Sketch: $30 - $40</li>
-          <li>Lined Art: $50 - $60</li>
-          <li>Fully Colored: $60 - $100+</li>
-          <li>Complex Backgrounds: +$20 - $50</li>
-        </ul>
-        <p>Turnaround time is typically 1-2 weeks depending on complexity. Rush orders available for an additional fee. All commissions include up to 3 rounds of minor revisions.</p>
+        <p>My gallery of personal artwork — a curated selection of pieces. Use the Admin panel to add more.</p>
       </div>
-    </section>
-
-    <!-- YCH Section -->
-    <section id="ych" class="content-section">
-      <h2 class="section-title">YCH Auctions</h2>
-      <div class="section-content">
-        <p>All "Your Character Here" auctions run for <strong>24 hours</strong>. Bidding is handled via PayPal. The winner will be contacted to provide character details.</p>
+      <div class="gallery-grid" id="personalGrid">
+        <!-- Personal artwork will be dynamically inserted here -->
       </div>
-      <div class="gallery-grid" id="ychGrid">
-        <!-- YCH artwork will be dynamically inserted here -->
-      </div>
-    </section>
-
-    <!-- Bases Section -->
-    <section id="bases" class="content-section">
-      <h2 class="section-title">Bases for Sale</h2>
-      <div class="section-content">
-        <p>Each base pack includes <strong>PSD and PNG files</strong>. Files are available for <strong>instant download</strong> after purchase.</p>
-      </div>
-      <div class="gallery-grid" id="basesGrid">
-        <!-- Base artwork will be dynamically inserted here -->
-      </div>
-    </section>
-
-    <!-- Adopts Section -->
-    <section id="adopts" class="content-section">
-      <h2 class="section-title">Character Adopts</h2>
-      <div class="section-content">
-        <p>Adoptables are sold for a <strong>fixed price</strong>. Upon purchase, <strong>ownership of the character transfers to you</strong> and you will receive an <strong>instant download of the full-size PNG file</strong>.</p>
-      </div>
-      <div class="gallery-grid" id="adoptsGrid">
-        <!-- Adopt artwork will be dynamically inserted here -->
-      </div>
-    </section>
-
-    <!-- TOS Section -->
-    <section id="tos" class="content-section">
-      <h2 class="section-title">Terms of Service</h2>
-      <div class="section-content">
-        <p style="text-align: center;">Please read these terms carefully before commissioning work. By purchasing a commission, you agree to these terms.</p>
-
-        <h3>NFT & Cryptocurrency Policy</h3>
-        <p>I do not sell any of my art as Non-Fungible Tokens (NFTs), traffic in cryptocurrency, or participate in any blockchain-related activity. Under no circumstance may I or my art be used, minted, or sold in this manner. This includes any commissioned work—my creative copyright allows me to prohibit any for-profit use, including sale as an NFT.</p>
-        
-        <h3>Commission Process</h3>
-        <p><strong>1. Initial Contact:</strong> To begin, contact me with your commission request, including character references and a description of your idea. We will discuss the details and I will provide a price quote.</p>
-        <p><strong>2. Sketch & Approval:</strong> Once payment is made, I will create a preliminary sketch for your review. You may request major changes at this stage. Up to 3 rounds of minor revisions are included.</p>
-        <p><strong>3. Final Artwork:</strong> After the sketch is approved, I will proceed with lining and coloring the artwork. Only minor color adjustments can be made at this stage. Turnaround time is typically 1-2 weeks.</p>
-
-        <h3>Usage Rights</h3>
-        <p>Personal use is permitted for all commissioned work. You may post the artwork on your social media (with credit), use it as a profile picture, etc. Commercial use requires a separate licensing agreement and fee. You may not resell, redistribute, or claim my artwork as your own creation.</p>
-        
-        <h3>Payment & Refunds</h3>
-        <p>Payment is required upfront for all work via PayPal. Refunds are available before work begins (minus any transaction fees). Once work has started, refunds are provided on a case-by-case basis depending on the amount of work completed.</p>
-
-        <h3>Artist Rights</h3>
-        <p>I, the artist, retain the copyright to the artwork and the right to display it in my portfolio, on social media, and for promotional purposes. I reserve the right to refuse any commission request for any reason. The client will not be charged if the commission is refused.</p>
-      </div>
+      <p style="text-align:center; margin-top:1rem;">For commissions, YCH, bases, adopts, and full Terms — please visit their dedicated pages via the navigation.</p>
     </section>
 
     <!-- Links Section -->
