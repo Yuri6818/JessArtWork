@@ -743,3 +743,144 @@ body.admin-mode .gallery-item:hover .delete-btn {
   .gallery-filter-btn { display: block; width: 100%; margin: 0.5rem 0; }
   .gallery-grid { grid-template-columns: 1fr; }
 }
+
+/* 9. ART DETAIL MODAL
+--------------------------------- */
+.art-detail-modal-content {
+  max-width: 900px; /* Wider for two columns */
+  width: 95%;
+}
+
+.modal-art-container {
+  display: flex;
+  gap: 2.5rem;
+}
+
+.modal-art-image {
+  flex: 1 1 50%; /* Grow and shrink, basis 50% */
+}
+
+.modal-art-image img {
+  width: 100%;
+  height: auto;
+  border-radius: var(--border-radius);
+  box-shadow: 0 5px 20px rgba(0,0,0,0.15);
+}
+
+.modal-art-details {
+  flex: 1 1 50%;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-art-details .modal-title {
+  text-align: left;
+  margin-bottom: 0.75rem;
+}
+
+.modal-art-details .gallery-item-status {
+  margin-bottom: 1rem;
+  align-self: flex-start; /* Don't stretch */
+}
+
+.modal-art-price {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-pink-dark);
+  margin-bottom: 1.5rem;
+}
+
+.modal-actions {
+  margin-top: auto; /* Pushes buttons to the bottom */
+  padding-top: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.modal-art-note {
+  font-size: 0.8rem;
+  color: var(--color-grey);
+  margin-top: 1.5rem;
+  line-height: 1.5;
+}
+
+/* Responsive adjustments for the new modal */
+@media (max-width: 768px) {
+  .modal-art-container {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+
+/* 10. CONFIRMATION MODAL
+--------------------------------- */
+#confirmationMessage {
+  margin: 1.5rem 0;
+  color: var(--color-light-text);
+  line-height: 1.6;
+}
+
+/* 11. AUCTION MODAL
+--------------------------------- */
+.auction-info {
+  display: flex;
+  justify-content: space-between;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+}
+
+.auction-info .info-label {
+  font-size: 0.8rem;
+  color: var(--color-grey);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.auction-info p {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--color-dark);
+}
+#auctionTimeLeft {
+  color: var(--color-pink-dark);
+}
+
+#bidForm {
+  margin: 1.5rem 0;
+}
+
+.bid-history {
+  margin-top: 2rem;
+  background: #fafafa;
+  border-radius: var(--border-radius);
+  padding: 1rem 1.5rem;
+  border: 1px solid #f0f0f0;
+}
+
+.bid-history h4 {
+  font-family: var(--font-heading);
+  color: var(--color-pink-dark);
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--color-pink-light);
+  padding-bottom: 0.5rem;
+}
+
+#auctionBidList {
+  list-style: none;
+  max-height: 150px;
+  overflow-y: auto;
+  padding-right: 1rem; /* for scrollbar spacing */
+}
+
+#auctionBidList li {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #eee;
+  color: var(--color-light-text);
+  font-size: 0.9rem;
+}
+#auctionBidList li:last-child {
+  border-bottom: none;
+}

@@ -21,7 +21,10 @@ function getInitialData() {
       title: 'Fire Character YCH', 
       price: '$60', 
       status: 'available',
-      image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop'
+      image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop',
+      currentBid: 60,
+      auctionEnd: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+      bids: []
     },
     { 
       id: 2,
@@ -29,7 +32,10 @@ function getInitialData() {
       title: 'Fantasy Warrior Pose', 
       price: '$70', 
       status: 'available',
-      image: 'https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=400&h=400&fit=crop'
+      image: 'https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=400&h=400&fit=crop',
+      currentBid: 70,
+      auctionEnd: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
+      bids: []
     },
     { 
       id: 3, 
@@ -37,7 +43,10 @@ function getInitialData() {
       title: 'Magical Girl YCH', 
       price: '$65', 
       status: 'sold',
-      image: 'https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=400&h=400&fit=crop'
+      image: 'https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=400&h=400&fit=crop',
+      currentBid: 110, // Example of a final bid
+      auctionEnd: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // Ended yesterday
+      bids: [{ amount: 80, email: 'a@test.com' }, { amount: 110, email: 'b@test.com' }]
     },
     { 
       id: 4, 
@@ -53,7 +62,7 @@ function getInitialData() {
       title: 'Feline Base Pack', 
       price: '$35', 
       status: 'available',
-      image: 'https://images.unsplash.com/photo-1573865526739-10c1dd7aa59e?w=400&h=400&fit=crop'
+      image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=400&fit=crop'
     },
     { 
       id: 6, 
@@ -172,22 +181,19 @@ document.addEventListener('DOMContentLoaded', () => {
       // Build the info block with contextual action buttons
       itemHTML += `
         <div class="gallery-item-info">
-          <h4 class="gallery-item-title">${item.title}</h4>
-          <span class="gallery-item-status status-${item.status}">
-            ${item.status}
-          </span>`;
+          <h4 class="gallery-item-title">${item.title}</h4>`;
 
       if (category === 'ych') {
-        itemHTML += `
-            <button class="btn btn-primary purchase-btn" onclick="openPurchaseModal(${item.id})" style="margin-top:1rem; width:100%">Contact / Bid (Starts at ${item.price})</button>`;
-      } else if (category === 'bases') {
-        itemHTML += `
-            <button class="btn btn-primary purchase-btn" onclick="handleDownload(${item.id})" style="margin-top:1rem; width:100%">Purchase / Download (${item.price})</button>`;
-      } else { // adopts and other categories
-        itemHTML += `
-            <button class="btn btn-primary purchase-btn" onclick="handleDownload(${item.id})" style="margin-top:1rem; width:100%">Buy Now (${item.price})</button>`;
+        itemHTML += `<span class="info-label" style="font-size:0.8rem; color:var(--color-grey);">Current Bid</span>
+          <p class="gallery-item-price">$${item.currentBid}</p>
+          <button class="btn btn-primary purchase-btn" onclick="openAuctionModal(${item.id})" style="margin-top:1rem; width:100%">Place Bid</button>`;
+      } else {
+        itemHTML += `<span class="gallery-item-status status-${item.status}">
+            ${item.status}
+          </span>
+          <button class="btn btn-primary purchase-btn" onclick="openArtDetailModal(${item.id})" style="margin-top:1rem; width:100%">View Details</button>`;
       }
-
+      
       // Admin-only quick controls (mark sold)
       itemHTML += `
           <div class="admin-quick-controls" style="margin-top:0.75rem">`;
@@ -234,7 +240,7 @@ document.addEventListener('DOMContentLoaded', () => {
       loginView.classList.add('hidden');
       adminDashboard.classList.remove('hidden');
     } else {
-      alert('✗ Invalid credentials. Try: admin / admin');
+      openAlertModal('Login Failed', '✗ Invalid credentials. Try: admin / admin');
     }
   }
 
@@ -248,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
   
   window.addArtwork = function() {
     if (!currentFile) {
-      alert('⚠ Please select an image first!');
+      openAlertModal('Validation Error', '⚠ Please select an image first!');
       return;
     }
 
@@ -280,19 +286,19 @@ document.addEventListener('DOMContentLoaded', () => {
       uploadPreview.classList.add('hidden');
       uploadArea.classList.remove('hidden');
 
-      alert('✓ Artwork added successfully!');
+      openAlertModal('Success', '✓ Artwork added successfully!');
       closeAdmin();
     };
     reader.readAsDataURL(currentFile);
   }
 
   window.deleteItem = function(id) {
-    if (confirm('Are you sure you want to delete this item? This cannot be undone.')) {
+    openConfirmationModal('Delete Item', 'Are you sure you want to delete this item? This cannot be undone.', () => {
       artData = artData.filter(item => item.id !== id);
       saveArtData(); // Persist data
       renderAllGalleries();
-      alert('✓ Item deleted successfully!');
-    }
+      openAlertModal('Success', '✓ Item deleted successfully!');
+    });
   }
 
   // Mark an item as sold (admin quick action)
@@ -300,14 +306,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const item = artData.find(it => it.id === id);
     if (!item) return;
     if (item.status === 'sold') {
-      alert('Item is already marked as sold.');
+      openAlertModal('Already Sold', 'This item is already marked as sold.');
       return;
     }
-    if (!confirm('Mark this item as SOLD?')) return;
-    item.status = 'sold';
-    saveArtData(); // Persist data
-    renderAllGalleries();
-    alert('✓ Item marked as SOLD');
+    openConfirmationModal('Mark as Sold', 'Mark this item as SOLD?', () => {
+      item.status = 'sold';
+      saveArtData(); // Persist data
+      renderAllGalleries();
+      openAlertModal('Success', '✓ Item marked as SOLD');
+    });
   }
 
   // --- EVENT LISTENERS -----------------------------------------------------
@@ -323,7 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
       uploadArea.classList.add('hidden');
       uploadPreview.innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Preview"> <p>${file.name}</p>`;
     } else {
-      alert('Please upload a valid image file.');
+      openAlertModal('File Error', 'Please upload a valid image file.');
     }
   };
   if (fileInput && uploadArea && uploadPreview) {
@@ -347,128 +354,341 @@ document.addEventListener('DOMContentLoaded', () => {
 
 });
 
-/* ---------------------- Purchase / Download Modal & Handlers ---------------------- */
+/* ---------------------- Art Detail / Purchase Modal ---------------------- */
 
-// Create purchase modal dynamically (shared across pages)
+// Create the modal dynamically (shared across pages)
 document.addEventListener('DOMContentLoaded', () => {
-  if (document.getElementById('purchaseModal')) return; // already created
+  if (document.getElementById('artDetailModal')) return; // already created
 
   const modalHtml = `
-    <div class="modal-overlay" id="purchaseModal">
-      <div class="modal-content">
-        <button class="close-modal" onclick="closePurchaseModal()">&times;</button>
-        <h3 class="modal-title">Contact / Purchase</h3>
-        <form id="purchaseForm">
-          <input type="hidden" id="purchaseItemId">
-          <div class="form-group">
-            <label for="buyerEmail">Your Email</label>
-            <input type="email" id="buyerEmail" required placeholder="you@example.com">
+    <div class="modal-overlay" id="artDetailModal">
+      <div class="modal-content art-detail-modal-content">
+        <button class="close-modal" onclick="closeArtDetailModal()">&times;</button>
+        <div class="modal-art-container">
+          <div class="modal-art-image">
+            <img src="" alt="Artwork Preview">
           </div>
-          <div class="form-group">
-            <label for="buyerMessage">Message / Notes</label>
-            <textarea id="buyerMessage" rows="4" placeholder="Include any references or notes"></textarea>
+          <div class="modal-art-details">
+            <h3 class="modal-title"></h3>
+            <span class="gallery-item-status"></span>
+            <p class="modal-art-price"></p>
+            <div class="modal-actions">
+                <button id="modalBuyBtn" class="btn btn-primary">Buy Now</button>
+                <button id="modalDownloadBtn" class="btn btn-secondary">Download</button>
+            </div>
+            <p class="modal-art-note">
+              This is a demo. Clicking "Buy Now" will simulate a purchase, mark the item as sold, and start a download.
+            </p>
           </div>
-          <div class="form-group">
-            <label for="buyerFile">Attach reference (PNG/JPG) — optional</label>
-            <input type="file" id="buyerFile" accept="image/*">
-          </div>
-          <div style="display:flex; gap:1rem; justify-content:space-between; margin-top:1rem">
-            <button type="submit" class="btn btn-primary">Send</button>
-            <button type="button" class="btn btn-secondary" onclick="closePurchaseModal()">Cancel</button>
-          </div>
-        </form>
+        </div>
       </div>
     </div>`;
 
   document.body.insertAdjacentHTML('beforeend', modalHtml);
 
-  // attach submit handler if form exists; otherwise use delegated submit listener as fallback
-  const purchaseForm = document.getElementById('purchaseForm');
-  if (purchaseForm) {
-    purchaseForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-      handlePurchaseSubmit();
-    });
-  } else {
-    // delegated fallback in case insertion timing differs across pages/environments
-    document.addEventListener('submit', function delegatedPurchase(e) {
-      if (e.target && e.target.id === 'purchaseForm') {
-        e.preventDefault();
-        handlePurchaseSubmit();
-        document.removeEventListener('submit', delegatedPurchase);
-      }
-    });
-  }
+  const confirmationModalHtml = `
+    <div class="modal-overlay" id="confirmationModal">
+      <div class="modal-content">
+        <h3 id="confirmationTitle" class="modal-title"></h3>
+        <p id="confirmationMessage"></p>
+        <div id="confirmationButtons" class="form-actions" style="justify-content:flex-end;">
+          
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', confirmationModalHtml);
 });
 
-window.openPurchaseModal = function(id) {
-  const modal = document.getElementById('purchaseModal');
+window.openArtDetailModal = function(id) {
+  const modal = document.getElementById('artDetailModal');
   const item = artData.find(it => it.id === id);
   if (!modal || !item) return;
-  document.getElementById('purchaseItemId').value = id;
-  // Prefill message with item info
-  document.getElementById('buyerMessage').value = `I'm interested in ${item.title} (${item.price}). Please contact me with details.`;
+
+  // Populate modal content
+  modal.querySelector('.modal-art-image img').src = item.image;
+  modal.querySelector('.modal-art-image img').alt = item.title;
+  modal.querySelector('.modal-title').textContent = item.title;
+  modal.querySelector('.modal-art-price').textContent = item.price;
+  
+  const statusEl = modal.querySelector('.gallery-item-status');
+  statusEl.textContent = item.status;
+  statusEl.className = `gallery-item-status status-${item.status}`;
+
+  // Configure buttons
+  const buyBtn = document.getElementById('modalBuyBtn');
+  const downloadBtn = document.getElementById('modalDownloadBtn');
+
+  buyBtn.onclick = () => handleDownload(item.id);
+  downloadBtn.onclick = () => triggerDownloadForItem(item);
+
+  if (item.status === 'sold') {
+    buyBtn.style.display = 'none'; // Hide buy button if sold
+    downloadBtn.style.display = 'inline-block'; // Show download button
+  } else {
+    buyBtn.style.display = 'inline-block';
+    downloadBtn.style.display = 'none'; // Hide download button if not sold
+  }
+
   modal.classList.add('active');
 }
 
-window.closePurchaseModal = function() {
-  const modal = document.getElementById('purchaseModal');
+window.closeArtDetailModal = function() {
+  const modal = document.getElementById('artDetailModal');
   if (!modal) return;
   modal.classList.remove('active');
 }
 
-async function handlePurchaseSubmit() {
-  const id = parseInt(document.getElementById('purchaseItemId').value, 10);
-  const email = document.getElementById('buyerEmail').value.trim();
-  const message = document.getElementById('buyerMessage').value.trim();
-  const fileInput = document.getElementById('buyerFile');
+/* ---------------------- Confirmation & Alert Modal Handlers ---------------------- */
+
+function openAlertModal(title, message) {
+  const modal = document.getElementById('confirmationModal');
+  if (!modal) return;
+  
+  modal.querySelector('#confirmationTitle').textContent = title;
+  modal.querySelector('#confirmationMessage').textContent = message;
+
+  const buttonsContainer = modal.querySelector('#confirmationButtons');
+  buttonsContainer.innerHTML = `<button type="button" class="btn btn-primary">OK</button>`;
+  buttonsContainer.querySelector('button').onclick = closeConfirmationModal;
+  
+  modal.classList.add('active');
+}
+
+function openConfirmationModal(title, message, onConfirm) {
+  const modal = document.getElementById('confirmationModal');
+  if (!modal) return;
+
+  modal.querySelector('#confirmationTitle').textContent = title;
+  modal.querySelector('#confirmationMessage').textContent = message;
+
+  const buttonsContainer = modal.querySelector('#confirmationButtons');
+  buttonsContainer.innerHTML = `
+    <button type="button" class="btn btn-secondary">Cancel</button>
+    <button type="button" class="btn btn-primary">Confirm</button>
+  `;
+  
+  buttonsContainer.querySelector('.btn-secondary').onclick = closeConfirmationModal;
+  buttonsContainer.querySelector('.btn-primary').onclick = () => {
+    onConfirm();
+    closeConfirmationModal();
+  };
+
+  modal.classList.add('active');
+}
+
+function closeConfirmationModal() {
+  const modal = document.getElementById('confirmationModal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+}
+
+/* ---------------------- YCH Auction Modal ---------------------- */
+
+let countdownInterval; // a place to store the countdown timer
+
+// Create auction modal dynamically
+document.addEventListener('DOMContentLoaded', () => {
+  if (document.getElementById('auctionModal')) return;
+
+  const modalHtml = `
+    <div class="modal-overlay" id="auctionModal">
+      <div class="modal-content art-detail-modal-content">
+        <button class="close-modal" onclick="closeAuctionModal()">&times;</button>
+        <div class="modal-art-container">
+          <div class="modal-art-image">
+            <img id="auctionImage" src="" alt="Artwork Preview">
+          </div>
+          <div class="modal-art-details">
+            <h3 id="auctionTitle" class="modal-title"></h3>
+            <div class="auction-info">
+              <div>
+                <span class="info-label">Current Bid</span>
+                <p id="auctionCurrentBid" class="modal-art-price"></p>
+              </div>
+              <div>
+                <span class="info-label">Time Left</span>
+                <p id="auctionTimeLeft"></p>
+              </div>
+               <div>
+                <span class="info-label">Bids</span>
+                <p id="auctionBidCount"></p>
+              </div>
+            </div>
+            
+            <form id="bidForm">
+              <input type="hidden" id="auctionItemId">
+              <div class="form-group">
+                <label for="bidAmount">Your Bid (min: $<span id="minBid"></span>)</label>
+                <input type="number" id="bidAmount" required>
+              </div>
+              <div class="form-group">
+                <label for="bidderEmail">Your Email</label>
+                <input type="email" id="bidderEmail" required placeholder="you@example.com">
+              </div>
+              <button type="submit" class="btn btn-primary" style="width:100%">Place Bid</button>
+            </form>
+            <div class="bid-history">
+              <h4>Bid History</h4>
+              <ul id="auctionBidList"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+
+  const bidForm = document.getElementById('bidForm');
+  if (bidForm) {
+    bidForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleBidSubmit();
+    });
+  }
+});
+
+function calculateTimeLeft(endDate) {
+  const diff = new Date(endDate) - new Date();
+  if (diff <= 0) return 'Auction Ended';
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / 1000 / 60) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
+
+  return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+}
+
+window.openAuctionModal = function(id) {
+  const modal = document.getElementById('auctionModal');
   const item = artData.find(it => it.id === id);
-  if (!item) return alert('Item not found');
+  if (!modal || !item) return;
 
-  // For YCH, open mail client with prefilled details so buyer can attach files
-  if (item.category === 'ych') {
-    const subject = encodeURIComponent(`YCH Bid: ${item.title} - ${item.price}`);
-    let body = `Hello,%0D%0A%0D%0AI would like to bid on ${item.title} (${item.price}).%0D%0A%0D%0AMessage:%0D%0A${encodeURIComponent(message)}%0D%0A%0D%0AContact Email: ${encodeURIComponent(email)}%0D%0A%0D%0APlease attach any reference images to this email and send to petalfawnstudio@gmail.com.`;
-    // Open mail client
-    window.location.href = `mailto:petalfawnstudio@gmail.com?subject=${subject}&body=${body}`;
-    closePurchaseModal();
-    alert('Opened your mail client. Please attach your reference file (if any) and send to petalfawnstudio@gmail.com');
-    return;
+  // Clear any existing countdown
+  if (countdownInterval) clearInterval(countdownInterval);
+
+  // --- Populate static content ---
+  document.getElementById('auctionItemId').value = id;
+  document.getElementById('auctionImage').src = item.image;
+  document.getElementById('auctionTitle').textContent = item.title;
+
+  // --- Populate dynamic content ---
+  const updateAuctionDetails = () => {
+    const currentItem = artData.find(it => it.id === id); // get latest data
+    document.getElementById('auctionCurrentBid').textContent = `$${currentItem.currentBid}`;
+    document.getElementById('auctionBidCount').textContent = `${(currentItem.bids || []).length} bids`;
+    
+    const minBid = currentItem.currentBid + 1;
+    document.getElementById('minBid').textContent = minBid;
+    document.getElementById('bidAmount').min = minBid;
+    document.getElementById('bidAmount').placeholder = minBid;
+
+    const bidList = document.getElementById('auctionBidList');
+    bidList.innerHTML = '';
+    const bids = currentItem.bids || [];
+    if (bids.length === 0) {
+      bidList.innerHTML = '<li>No bids yet.</li>';
+    } else {
+      // Show bids, but anonymize email for privacy
+      [...bids].reverse().forEach(bid => {
+        const li = document.createElement('li');
+        li.textContent = `$${bid.amount} by bidder...${bid.email.slice(-10)}`;
+        bidList.appendChild(li);
+      });
+    }
+
+    // --- Handle Countdown ---
+    const timeLeftEl = document.getElementById('auctionTimeLeft');
+    const form = document.getElementById('bidForm');
+    if (new Date(currentItem.auctionEnd) < new Date()) {
+      timeLeftEl.textContent = 'Auction Ended';
+      if (countdownInterval) clearInterval(countdownInterval);
+      form.style.display = 'none'; // Hide form if auction is over
+    } else {
+      timeLeftEl.textContent = calculateTimeLeft(currentItem.auctionEnd);
+      form.style.display = 'block';
+    }
+  }
+  
+  updateAuctionDetails(); // initial call
+  // We don't need a live data update for this demo, but this is where you'd set one up
+  
+  // --- Setup Countdown Timer ---
+  countdownInterval = setInterval(() => {
+    const timeLeftEl = document.getElementById('auctionTimeLeft');
+    const timeLeft = calculateTimeLeft(item.auctionEnd);
+    timeLeftEl.textContent = timeLeft;
+    if (timeLeft === 'Auction Ended') {
+      clearInterval(countdownInterval);
+      document.getElementById('bidForm').style.display = 'none';
+    }
+  }, 1000);
+
+  modal.classList.add('active');
+}
+
+window.closeAuctionModal = function() {
+  const modal = document.getElementById('auctionModal');
+  if (modal) modal.classList.remove('active');
+  // Stop the countdown when the modal is closed
+  if (countdownInterval) clearInterval(countdownInterval);
+}
+
+async function handleBidSubmit() {
+  const id = parseInt(document.getElementById('auctionItemId').value, 10);
+  const item = artData.find(it => it.id === id);
+  const newBidAmount = parseInt(document.getElementById('bidAmount').value, 10);
+  const email = document.getElementById('bidderEmail').value.trim();
+
+  if (!item || !newBidAmount || !email) {
+    return openAlertModal('Error', 'Please fill out all fields.');
+  }
+  if (new Date(item.auctionEnd) < new Date()) {
+    return openAlertModal('Auction Ended', 'This auction has already ended.');
+  }
+  if (newBidAmount <= item.currentBid) {
+    return openAlertModal('Bid Too Low', `Your bid must be higher than the current bid of $${item.currentBid}.`);
   }
 
-  // For bases/adopts: attempt to fetch the image and trigger download, then mark as sold
-  try {
-    await triggerDownloadForItem(item);
-    item.status = 'sold';
-    saveArtData(); // Persist data
-    renderAllGalleries();
-    alert('✓ Purchase complete — file downloaded and item marked as sold.');
-  } catch (err) {
-    console.error(err);
-    alert('Could not download file automatically. Opening image in new tab; please save manually.');
-    window.open(item.image, '_blank');
-  }
+  // Add the new bid
+  item.bids.push({ amount: newBidAmount, email: email });
+  item.currentBid = newBidAmount;
+  saveArtData();
 
-  closePurchaseModal();
+  // Re-render the modal content to show the new bid
+  openAuctionModal(id); 
+  
+  // Refocus the modal after update
+  const modal = document.getElementById('auctionModal');
+  if (modal) modal.focus();
 }
 
 // Handle direct download button (bypass modal) for faster flow
 window.handleDownload = async function(id) {
   const item = artData.find(it => it.id === id);
   if (!item) return;
-  if (item.status === 'sold') { alert('This item is already sold.'); return; }
-
-  if (!confirm(`Proceed to download/purchase "${item.title}" for ${item.price}?\nThis demo flow provides a direct download and will mark the item as sold.`)) return;
-  try {
-    await triggerDownloadForItem(item);
-    item.status = 'sold';
-    saveArtData(); // Persist data
-    renderAllGalleries();
-    alert('✓ Downloaded and marked as sold.');
-  } catch (err) {
-    console.error(err);
-    window.open(item.image, '_blank');
+  if (item.status === 'sold') {
+    openAlertModal('Already Sold', 'This item is already sold.');
+    return;
   }
+
+  const message = `Proceed to download/purchase "${item.title}" for ${item.price}?\nThis demo flow provides a direct download and will mark the item as sold.`;
+
+  openConfirmationModal('Confirm Purchase', message, async () => {
+    try {
+      await triggerDownloadForItem(item);
+      item.status = 'sold';
+      saveArtData(); // Persist data
+      renderAllGalleries();
+      openAlertModal('Success', '✓ Downloaded and marked as sold.');
+      closeArtDetailModal();
+    } catch (err) {
+      console.error(err);
+      openAlertModal('Download Error', 'Could not download file automatically. Opening image in new tab; please save manually.');
+      window.open(item.image, '_blank');
+    }
+  });
 }
 
 async function triggerDownloadForItem(item) {
