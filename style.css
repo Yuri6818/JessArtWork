@@ -68,11 +68,35 @@ html {
   font-weight: 500;
   line-height: 1.2;
   margin-bottom: 1rem;
-  color: #ff1493;
-  text-shadow: 0 4px 20px rgba(255, 20, 147, 0.4), 0 2px 10px var(--shadow-color);
   position: relative;
   display: inline-block;
   letter-spacing: 2px;
+}
+
+.main-header h1 span {
+  display: inline-block;
+  margin: 0 0.15em;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.header-petal {
+  color: #ff1493;
+  filter: drop-shadow(0 2px 8px rgba(255, 20, 147, 0.5));
+}
+
+.header-fawn {
+  color: #e06c9f;
+  filter: drop-shadow(0 2px 8px rgba(224, 108, 159, 0.5));
+}
+
+.header-studio {
+  color: #d946a6;
+  filter: drop-shadow(0 2px 8px rgba(217, 70, 166, 0.5));
+}
+
+.main-header h1:hover span {
+  transform: scaleY(1.1);
+  filter: brightness(1.1);
 }
 
 /* Rose decorations using emoji */
@@ -471,37 +495,78 @@ body.admin-mode .gallery-item:hover .delete-btn {
 
 .social-links {
   display: flex;
-  gap: 1.5rem;
+  gap: 2rem;
   justify-content: center;
   flex-wrap: wrap;
   margin-top: 2rem;
 }
 
 .social-btn {
-  background: #174b2f; /* dark green */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #1f6b42, #174b2f);
   color: white;
-  border: 2px solid rgba(255,255,255,0.06);
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.15);
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.social-btn i {
+  font-size: 1.3rem;
+  transition: transform 0.3s ease;
+}
+
+.social-btn span {
+  transition: transform 0.3s ease;
 }
 
 .social-btn:hover {
-  background: #1f6b42;
+  background: linear-gradient(135deg, #2a8c52, #1f6b42);
   color: white;
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-hover);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(31, 107, 66, 0.4);
+  border-color: rgba(255,255,255,0.3);
+}
+
+.social-btn:hover i {
+  transform: scale(1.2) rotate(5deg);
+}
+
+.social-twitter:hover {
+  background: linear-gradient(135deg, #1da1f2, #1591da);
+}
+
+.social-deviantart:hover {
+  background: linear-gradient(135deg, #05cc47, #02a827);
+}
+
+.social-furaffinity:hover {
+  background: linear-gradient(135deg, #ff8c00, #ff7700);
 }
 
 /* Make the Connect section darker and remove the white glass feel */
 #links.content-section {
-  background: rgba(23, 75, 47, 0.85);
+  background: linear-gradient(135deg, rgba(23, 75, 47, 0.9), rgba(31, 107, 66, 0.9));
   color: white;
-  box-shadow: none;
-  border: 1px solid rgba(255,255,255,0.03);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+#links .section-title {
+  color: #ffc2d1;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 #links .section-content {
   background: transparent;
+  color: white;
 }
 
 .status-badge {
@@ -605,10 +670,20 @@ body.admin-mode .gallery-item:hover .delete-btn {
   font-family: var(--font-body);
 }
 
-.form-group input:focus, .form-group select:focus {
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
   outline: none;
   border-color: var(--color-pink);
   box-shadow: 0 0 0 3px var(--shadow-color);
+}
+
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid #ced4da;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: var(--font-body);
+  resize: vertical;
 }
 
 .form-actions {

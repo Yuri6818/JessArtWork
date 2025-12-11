@@ -4,13 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Commissions — PetalFawnStudio</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;600;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Stylesheet -->
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header class="main-header">
     <div class="container">
       <div class="header-content">
-        <h1>PetalFawnStudio</h1>
+        <h1><span class="header-petal">Petal</span> <span class="header-fawn">Fawn</span> <span class="header-studio">Studio</span></h1>
         <p>Custom Character Art & Designs</p>
       </div>
     </div>
@@ -36,35 +46,68 @@
           <strong>Status:</strong> <span class="status-badge status-open" id="commissionStatusPage">OPEN</span>
         </div>
 
-        <h3>SKETCHES</h3>
+        <h3>Sketches</h3>
         <ul class="pricing-list">
           <li>Full-Body Clean Sketch – $35 — Single character, clean lineart, no color, simple/blank background. Extra character: +$25</li>
         </ul>
 
-        <h3>ICONS</h3>
+        <h3>Icons</h3>
         <ul class="pricing-list">
           <li>Full Color Icon – $45 — Headshot / bust, clean lines, full color & shading, simple or soft background.</li>
           <li>Deluxe Icon – $60 — Headshot / bust with decorative frame, flowers/props, or more complex background. Extra character (if cropped together): +$35</li>
         </ul>
 
-        <h3>HALF-BODY / ¾ ILLUSTRATIONS</h3>
+        <h3>Half-Body / ¾ Illustrations</h3>
         <ul class="pricing-list">
           <li>Half-Body Illustration – $85+ — Waist/hips-up or ¾ body. Clean lines, full color & shading, simple or gradient background.</li>
           <li>Deluxe Half-Body – $110+ — Half-body with ornate outfits, jewelry, and/or detailed or scenic background elements. Extra character (same canvas): +70% of the base price</li>
         </ul>
 
-        <h3>FULL-BODY ILLUSTRATIONS</h3>
+        <h3>Full-Body Illustrations</h3>
         <ul class="pricing-list">
           <li>Full-Body Character (Simple BG) – $140+ — Full-body pose, clean lines, full color & shading, with a simple, gradient, or lightly textured background.</li>
           <li>Full-Body Scenic Illustration – $200+ — Print-ready illustration: full-body character in a detailed environment (forest, room, roses, props, lighting FX, etc.). Extra character (same canvas): +75% of the base price</li>
         </ul>
 
-        <h3>GENERAL NOTES</h3>
+        <h3>General notes</h3>
         <ul class="pricing-list">
           <li>All prices are in USD.</li>
           <li>Final quotes may vary based on complexity (wings, armor, heavy markings, props, etc.).</li>
-          <li>Contact: <a href="mailto:petalfawnstudio@gmail.com">petalfawnstudio@gmail.com</a> — Use email for quotes (not purchases). I reserve the right to refuse commissions.</li>
+          <li><strong>Important:</strong> I am not always willing to work with every character or idea. Commission acceptances are at my sole discretion.</li>
         </ul>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2 class="section-title">Request a Quote</h2>
+      <div class="section-content">
+        <p>To request a commission or get a custom quote, please fill out the form below and I will get back to you within 1-2 business days.</p>
+        <form id="quoteForm">
+          <div class="form-group">
+            <label for="quoteEmail">Your Email</label>
+            <input type="email" id="quoteEmail" required placeholder="you@example.com">
+          </div>
+          <div class="form-group">
+            <label for="quoteName">Name / Studio</label>
+            <input type="text" id="quoteName" required placeholder="Your name or studio name">
+          </div>
+          <div class="form-group">
+            <label for="quoteSubject">Commission Type</label>
+            <select id="quoteSubject" required>
+              <option value="">-- Select a type --</option>
+              <option value="sketch">Sketch</option>
+              <option value="icon">Icon</option>
+              <option value="halfbody">Half-Body / ¾ Body</option>
+              <option value="fullbody">Full-Body</option>
+              <option value="other">Other / Custom</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="quoteMessage">Tell me about your project</label>
+            <textarea id="quoteMessage" rows="5" required placeholder="Describe what you're looking for, character details, style preferences, etc."></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%;">Send Quote Request</button>
+        </form>
       </div>
     </section>
   </main>
@@ -75,5 +118,36 @@
       <p>Designed with 💖</p>
     </div>
   </footer>
+
+  <script>
+    // Handle quote form submission
+    document.addEventListener('DOMContentLoaded', () => {
+      const quoteForm = document.getElementById('quoteForm');
+      if (quoteForm) {
+        quoteForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          const email = document.getElementById('quoteEmail').value;
+          const name = document.getElementById('quoteName').value;
+          const subject = document.getElementById('quoteSubject').value;
+          const message = document.getElementById('quoteMessage').value;
+          
+          // Compose mailto link
+          const mailtoSubject = encodeURIComponent(`Commission Quote Request: ${subject}`);
+          const mailtoBody = encodeURIComponent(
+            `Hello Cherish,\n\nI am interested in a commission.\n\n` +
+            `Name/Studio: ${name}\n` +
+            `Commission Type: ${subject}\n\n` +
+            `Details:\n${message}\n\n` +
+            `You can reach me at: ${email}`
+          );
+          
+          window.location.href = `mailto:petalfawnstudio@gmail.com?subject=${mailtoSubject}&body=${mailtoBody}`;
+          alert('Opening your email client. Your quote request will be ready to send.');
+          quoteForm.reset();
+        });
+      }
+    });
+  </script>
+  <script src="script.js"></script>
 </body>
 </html>
