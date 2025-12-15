@@ -19,7 +19,8 @@ function getInitialData() {
       id: 1,
       category: 'ych',
       title: 'Fire Character YCH', 
-      price: '$60', 
+      startingBid: 60,
+      reservePrice: 60,
       status: 'available',
       image: 'https://images.unsplash.com/photo-1578632767115-351597cf2477?w=400&h=400&fit=crop',
       currentBid: 60,
@@ -30,7 +31,8 @@ function getInitialData() {
       id: 2,
       category: 'ych',
       title: 'Fantasy Warrior Pose', 
-      price: '$70', 
+      startingBid: 70,
+      reservePrice: 70,
       status: 'available',
       image: 'https://images.unsplash.com/photo-1618519764620-7403abdbdfe9?w=400&h=400&fit=crop',
       currentBid: 70,
@@ -41,7 +43,8 @@ function getInitialData() {
       id: 3, 
       category: 'ych',
       title: 'Magical Girl YCH', 
-      price: '$65', 
+      startingBid: 65, 
+      reservePrice: 65,
       status: 'sold',
       image: 'https://images.unsplash.com/photo-1550859492-d5da9d8e45f3?w=400&h=400&fit=crop',
       currentBid: 110, // Example of a final bid
@@ -52,7 +55,7 @@ function getInitialData() {
       id: 4, 
       category: 'bases',
       title: 'Wolf Base - PSD', 
-      price: '$30', 
+      buyNowPrice: '$30', 
       status: 'available',
       image: 'https://images.unsplash.com/photo-1614027164847-1b28cfe1df60?w=400&h=400&fit=crop'
     },
@@ -60,7 +63,7 @@ function getInitialData() {
       id: 5, 
       category: 'bases',
       title: 'Feline Base Pack', 
-      price: '$35', 
+      buyNowPrice: '$35', 
       status: 'available',
       image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=400&h=400&fit=crop'
     },
@@ -68,7 +71,7 @@ function getInitialData() {
       id: 6, 
       category: 'adopts',
       title: 'Pink Fawn Character', 
-      price: '$45', 
+      buyNowPrice: '$45', 
       status: 'available',
       image: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop'
     },
@@ -76,7 +79,7 @@ function getInitialData() {
       id: 7, 
       category: 'adopts',
       title: 'Galaxy Dragon Adopt', 
-      price: '$80', 
+      buyNowPrice: '$80', 
       status: 'available',
       image: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=400&h=400&fit=crop'
     },
@@ -84,7 +87,7 @@ function getInitialData() {
       id: 8,
       category: 'adopts',
       title: 'Ocean Spirit Design', 
-      price: '$55', 
+      buyNowPrice: '$55', 
       status: 'sold',
       image: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=400&h=400&fit=crop'
     }
@@ -94,7 +97,7 @@ function getInitialData() {
       id: 9,
       category: 'personal',
       title: 'Forest Nymph Illustration',
-      price: '—',
+      buyNowPrice: '—',
       status: 'available',
       image: 'https://images.unsplash.com/photo-1503264116251-35a269479413?w=600&h=600&fit=crop'
     }
@@ -105,6 +108,26 @@ function loadArtData() {
   const savedData = localStorage.getItem(ART_DATA_KEY);
   if (savedData) {
     artData = JSON.parse(savedData);
+    // --- Data migration/validation step ---
+    artData.forEach(item => {
+      if (item.category === 'ych') {
+        if (item.startingBid === undefined) {
+          item.startingBid = 10; // Default starting bid
+        }
+        if (item.currentBid === undefined) {
+          item.currentBid = item.startingBid;
+        }
+        if (item.bids === undefined) {
+          item.bids = [];
+        }
+        if (item.auctionEnd === undefined) {
+          // Set a default auction end time, e.g., 3 days from now
+          item.auctionEnd = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString();
+        }
+      }
+    });
+    // The data has been "migrated", so save it back to ensure it's correct for next time
+    saveArtData();
   } else {
     // Fallback to initial data if nothing is in localStorage
     artData = getInitialData();
@@ -126,8 +149,23 @@ document.addEventListener('DOMContentLoaded', () => {
   const loginView = document.getElementById('loginView');
   const adminDashboard = document.getElementById('adminDashboard');
   const uploadArea = document.getElementById('uploadArea');
-  const uploadPreview = document.getElementById('uploadPreview');
   const fileInput = document.getElementById('fileInput');
+  const categorySelect = document.getElementById('categorySelect');
+
+  // --- ADMIN UI DYNAMIC FIELDS ------------------------------------------
+  if (categorySelect) {
+    categorySelect.addEventListener('change', () => {
+      const buyNowPriceGroup = document.getElementById('buyNowPriceGroup');
+      const startingBidGroup = document.getElementById('startingBidGroup');
+      if (categorySelect.value === 'ych') {
+        buyNowPriceGroup.classList.add('hidden');
+        startingBidGroup.classList.remove('hidden');
+      } else {
+        buyNowPriceGroup.classList.remove('hidden');
+        startingBidGroup.classList.add('hidden');
+      }
+    });
+  }
 
   // --- FLAIR ANIMATIONS (Define First) -----------------------------------
   const observer = new IntersectionObserver((entries) => {
@@ -184,7 +222,9 @@ document.addEventListener('DOMContentLoaded', () => {
           <h4 class="gallery-item-title">${item.title}</h4>`;
 
       if (category === 'ych') {
-        itemHTML += `<span class="info-label" style="font-size:0.8rem; color:var(--color-grey);">Current Bid</span>
+        itemHTML += `<span class="info-label" style="font-size:0.8rem; color:var(--color-grey);">Starting Bid</span>
+          <p class="gallery-item-price">$${item.startingBid}</p>
+          <span class="info-label" style="font-size:0.8rem; color:var(--color-grey);">Current Bid</span>
           <p class="gallery-item-price">$${item.currentBid}</p>
           <button class="btn btn-primary purchase-btn" onclick="openAuctionModal(${item.id})" style="margin-top:1rem; width:100%">Place Bid</button>`;
       } else {
@@ -195,10 +235,12 @@ document.addEventListener('DOMContentLoaded', () => {
       }
       
       // Admin-only quick controls (mark sold)
-      itemHTML += `
-          <div class="admin-quick-controls" style="margin-top:0.75rem">`;
-      itemHTML += `<button class="btn btn-secondary" onclick="markSold(${item.id})">Mark Sold</button>`;
-      itemHTML += `</div>`;
+      if (category !== 'bases') {
+        itemHTML += `
+            <div class="admin-quick-controls" style="margin-top:0.75rem">`;
+        itemHTML += `<button class="btn btn-secondary" onclick="markSold(${item.id})">Mark Sold</button>`;
+        itemHTML += `</div>`;
+      }
 
       itemHTML += `</div>`; // close info block
 
@@ -260,19 +302,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const category = document.getElementById('categorySelect').value;
     const title = document.getElementById('artTitle').value || 'Untitled Artwork';
-    const price = document.getElementById('artPrice').value || '$0';
     const status = document.getElementById('artStatus').value;
     
     const reader = new FileReader();
     reader.onload = function(e) {
-      const newItem = {
+      const baseItem = {
         id: Date.now(),
         category: category,
         title: title,
-        price: price,
         status: status,
         image: e.target.result
       };
+
+      let newItem;
+      if (category === 'ych') {
+        let startingBid = parseInt(document.getElementById('artStartingBid').value.replace('$', ''), 10) || 0;
+        if (startingBid < 10) {
+          openAlertModal('Validation Error', 'Starting bid must be at least $10.');
+          return; // Stop the function
+        }
+        newItem = {
+          ...baseItem,
+          startingBid: startingBid,
+          reservePrice: startingBid, // Reserve is same as starting for now
+          currentBid: startingBid,
+          auctionEnd: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // Default 5 days
+          bids: []
+        };
+      } else {
+        const buyNowPrice = document.getElementById('artPrice').value || '$0';
+        newItem = {
+          ...baseItem,
+          buyNowPrice: buyNowPrice
+        };
+      }
       
       artData.unshift(newItem);
       saveArtData(); // Persist data
@@ -281,6 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Reset form
       document.getElementById('artTitle').value = '';
       document.getElementById('artPrice').value = '';
+      document.getElementById('artStartingBid').value = '';
       currentFile = null;
       uploadPreview.innerHTML = '';
       uploadPreview.classList.add('hidden');
@@ -377,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button id="modalDownloadBtn" class="btn btn-secondary">Download</button>
             </div>
             <p class="modal-art-note">
-              This is a demo. Clicking "Buy Now" will simulate a purchase, mark the item as sold, and start a download.
+              This is a demo. In a real transaction, you would be redirected to PayPal. Clicking "Buy Now" simulates a successful payment and starts the download.
             </p>
           </div>
         </div>
@@ -409,7 +473,7 @@ window.openArtDetailModal = function(id) {
   modal.querySelector('.modal-art-image img').src = item.image;
   modal.querySelector('.modal-art-image img').alt = item.title;
   modal.querySelector('.modal-title').textContent = item.title;
-  modal.querySelector('.modal-art-price').textContent = item.price;
+  modal.querySelector('.modal-art-price').textContent = item.buyNowPrice;
   
   const statusEl = modal.querySelector('.gallery-item-status');
   statusEl.textContent = item.status;
@@ -579,7 +643,8 @@ window.openAuctionModal = function(id) {
     document.getElementById('auctionCurrentBid').textContent = `$${currentItem.currentBid}`;
     document.getElementById('auctionBidCount').textContent = `${(currentItem.bids || []).length} bids`;
     
-    const minBid = currentItem.currentBid + 1;
+    const isFirstBid = (currentItem.bids || []).length === 0;
+    const minBid = isFirstBid ? currentItem.startingBid : currentItem.currentBid + 1;
     document.getElementById('minBid').textContent = minBid;
     document.getElementById('bidAmount').min = minBid;
     document.getElementById('bidAmount').placeholder = minBid;
@@ -647,8 +712,16 @@ async function handleBidSubmit() {
   if (new Date(item.auctionEnd) < new Date()) {
     return openAlertModal('Auction Ended', 'This auction has already ended.');
   }
-  if (newBidAmount <= item.currentBid) {
-    return openAlertModal('Bid Too Low', `Your bid must be higher than the current bid of $${item.currentBid}.`);
+  const isFirstBid = item.bids.length === 0;
+
+  if (isFirstBid) {
+    if (newBidAmount < item.startingBid) {
+      return openAlertModal('Bid Too Low', `The first bid must be at least the starting bid of $${item.startingBid}.`);
+    }
+  } else {
+    if (newBidAmount <= item.currentBid) {
+      return openAlertModal('Bid Too Low', `Your bid must be higher than the current bid of $${item.currentBid}.`);
+    }
   }
 
   // Add the new bid
@@ -673,7 +746,7 @@ window.handleDownload = async function(id) {
     return;
   }
 
-  const message = `Proceed to download/purchase "${item.title}" for ${item.price}?\nThis demo flow provides a direct download and will mark the item as sold.`;
+  const message = `You are about to purchase "${item.title}" for ${item.buyNowPrice}.\n\nIn a real transaction, you would be sent to PayPal. This demo will simulate a successful payment, mark the item as sold, and start your download. Proceed?`;
 
   openConfirmationModal('Confirm Purchase', message, async () => {
     try {

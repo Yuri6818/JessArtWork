@@ -32,7 +32,7 @@
   <nav class="main-nav">
     <div class="container">
       <ul>
-        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html">Home</a></li>
         <li><a href="commissions.html">Commissions</a></li>
         <li><a class="nav-uppercase" href="ych.html">YCH</a></li>
         <li><a href="bases.html">Bases</a></li>
@@ -141,9 +141,14 @@
           <input type="text" id="artTitle" placeholder="e.g., Fire Dragon YCH">
         </div>
 
-        <div class="form-group">
-          <label for="artPrice">Price</label>
+        <div class="form-group" id="buyNowPriceGroup">
+          <label for="artPrice">Buy Now Price</label>
           <input type="text" id="artPrice" placeholder="e.g., $60">
+        </div>
+
+        <div class="form-group hidden" id="startingBidGroup">
+          <label for="artStartingBid">Starting Bid</label>
+          <input type="text" id="artStartingBid" placeholder="e.g., $50">
         </div>
 
         <div class="form-group">
