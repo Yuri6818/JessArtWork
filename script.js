@@ -106,8 +106,20 @@ function getInitialData() {
 
 function loadArtData() {
   const savedData = localStorage.getItem(ART_DATA_KEY);
+  // Flag whether localStorage was corrupt and was reset
+  window.__localDataWasCorrupt = false;
   if (savedData) {
-    artData = JSON.parse(savedData);
+    try {
+      artData = JSON.parse(savedData);
+    } catch (e) {
+      console.warn('Could not parse saved art data; resetting to demo data.', e);
+      localStorage.removeItem(ART_DATA_KEY);
+      artData = getInitialData();
+      saveArtData();
+      window.__localDataWasCorrupt = true;
+      return;
+    }
+
     // --- Data migration/validation step ---
     artData.forEach(item => {
       if (item.category === 'ych') {
@@ -140,6 +152,32 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- DATA ----------------------------------------------------------------
   // Load data from localStorage or use initial data
   loadArtData();
+
+  // If local data was corrupt and reset, show a small banner to let the user restore demo data
+  if (window.__localDataWasCorrupt) {
+    const banner = document.createElement('div');
+    banner.style.position = 'fixed';
+    banner.style.top = '12px';
+    banner.style.left = '50%';
+    banner.style.transform = 'translateX(-50%)';
+    banner.style.zIndex = '4000';
+    banner.style.padding = '0.6rem 1rem';
+    banner.style.background = 'linear-gradient(90deg,#ffc2d1,#ffd6e8)';
+    banner.style.border = '1px solid rgba(0,0,0,0.06)';
+    banner.style.borderRadius = '999px';
+    banner.style.boxShadow = '0 6px 24px rgba(0,0,0,0.08)';
+    banner.innerHTML = '<strong>Notice:</strong> Your saved gallery data was invalid and has been reset to demo data. <button id="restoreDemoBtn" style="margin-left:.75rem;padding:.35rem .6rem;border-radius:8px;border:0;background:#ff7aa2;color:white;cursor:pointer">Restore Demo Data</button>';
+    document.body.appendChild(banner);
+    document.getElementById('restoreDemoBtn').addEventListener('click', () => {
+      localStorage.removeItem(ART_DATA_KEY);
+      artData = getInitialData();
+      saveArtData();
+      renderAllGalleries();
+      banner.remove();
+    });
+    // Remove banner automatically after 12s
+    setTimeout(() => { if (banner.parentNode) banner.remove(); }, 12000);
+  }
 
   let currentFile = null;
 
@@ -292,6 +330,36 @@ document.addEventListener('DOMContentLoaded', () => {
     adminDashboard.classList.add('hidden');
     loginForm.reset();
     closeAdmin();
+  }
+
+  // Add a small replace-image control to the admin dashboard for swapping demo images with real ones
+  if (adminDashboard) {
+    try {
+      const replaceGroup = document.createElement('div');
+      replaceGroup.className = 'form-group';
+      replaceGroup.innerHTML = `
+        <h4 style="margin-top:.5rem">Quick Image Replace</h4>
+        <label for="replaceImageId">Item ID</label>
+        <input id="replaceImageId" placeholder="e.g., 4" style="width:6rem;margin-right:.5rem">
+        <label for="replaceImageUrl">Image URL</label>
+        <input id="replaceImageUrl" placeholder="https://.../real-image.png" style="width:100%">
+        <div style="margin-top:.5rem"><button id="replaceImageBtn" class="btn btn-primary">Replace Image</button></div>
+      `;
+      adminDashboard.appendChild(replaceGroup);
+      document.getElementById('replaceImageBtn').addEventListener('click', () => {
+        const id = parseInt(document.getElementById('replaceImageId').value, 10);
+        const url = document.getElementById('replaceImageUrl').value.trim();
+        if (!id || !url) return openAlertModal('Error', 'Please provide an item ID and image URL.');
+        const item = artData.find(it => it.id === id);
+        if (!item) return openAlertModal('Not found', 'Could not find an item with that ID.');
+        item.image = url;
+        saveArtData();
+        renderAllGalleries();
+        openAlertModal('Success', 'Image replaced for item ID ' + id);
+      });
+    } catch (err) {
+      console.warn('Could not add replace-image control', err);
+    }
   }
   
   window.addArtwork = function() {
